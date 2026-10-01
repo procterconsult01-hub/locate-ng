@@ -1,26 +1,85 @@
-# LocateNG deploy status (guide page)
+# LocateNG custom domain — deploy status
 
-## Done locally
-- In-app How-to guide at hash route `#/guide` (`GuidePage.tsx`)
-- Header link **How to use** → `#/guide`
-- `shareUrl` uses Vite `import.meta.env.BASE_URL` so shares stay under `/locate-ng/`
-- `npm run build` succeeds; `dist/` + `/tmp/locate-ng-pages-new` ready for `gh-pages`
-- Commit on `main`: `bdbbafb` Add shareable How-to guide at #/guide (ahead of origin by 1)
+**Goal:** https://locate-ng.com/ (and www) on GitHub Pages  
+**Repo:** procterconsult01-hub/locate-ng  
+**Updated:** 2026-10-01 (CT)
 
-## Live site (pre-push)
-- https://procterconsult01-hub.github.io/locate-ng/ → HTTP 200 (old build, no guide yet)
-- Intended guide URL after deploy: https://procterconsult01-hub.github.io/locate-ng/#/guide
+## Done locally (ready to push)
 
-## Blockers (push)
-- `git push` fails: no GitHub credentials (`could not read Username`)
-- Prior `x-access-token` in `/tmp/locate-ng-pages` remote → **401 expired/revoked** (scrubbed)
-- `user-GitHub-xai` MCP: read-only (403 on `push_files` / tree create)
-- `cursor-github` MCP: `needsAuth`
-- `gh` CLI: not logged in; no `GH_TOKEN` in env
+| Item | Status |
+|------|--------|
+| `vite.config.ts` `base: '/'` | Done (commit `08eb8d8` on local `main`) |
+| `public/CNAME` → `locate-ng.com` | Done |
+| `npm run build` with apex asset paths (`/assets/...`) | Done |
+| `dist/` includes `CNAME`, `.nojekyll`, `404.html` | Done |
+| Staged Pages tree | `/tmp/locate-ng-pages-custom` (orphan `gh-pages` commit) |
+| README live URL | Updated to locate-ng.com |
 
-## To finish deploy (needs write PAT or `gh auth login`)
+Local `main` is **1 commit ahead** of `origin/main` (`08eb8d8`).
+
+## Auth blockers (cannot finish remote Pages setup from this box)
+
+| Path | Result |
+|------|--------|
+| `GH_TOKEN` env | **Invalid** (`gh auth status` / git push 401) |
+| `user-GitHub-xai` MCP | Authenticated as `procterconsult01-hub` but **read-only** (403 on `create_or_update_file` / `push_files`) |
+| `cursor-github` MCP | `needsAuth` |
+| Pages API (`PUT .../pages` cname / https_enforced) | Blocked — no write token |
+
+## Commands to finish (needs write PAT: `repo` + prefer `workflow`)
+
 ```bash
-cd /workspace/locate-ng && git push origin main
-cd /tmp/locate-ng-pages-new && git push -f origin gh-pages
+# 1) Push source (base /, CNAME in public/)
+cd /workspace/locate-ng
+git push origin main
+
+# 2) Force-publish rebuilt site to gh-pages
+cd /tmp/locate-ng-pages-custom
+git push -f origin HEAD:gh-pages
+
+# 3) Set custom domain + HTTPS (after DNS propagates enough for cert)
+gh api -X PUT repos/procterconsult01-hub/locate-ng/pages \
+  -f cname='locate-ng.com' \
+  -F https_enforced=true
 ```
-Or set Pages to GitHub Actions (workflow already committed on local main) after pushing `main`.
+
+Or in GitHub UI: **Settings → Pages → Custom domain** = `locate-ng.com` → Save → later check **Enforce HTTPS**.
+
+Note: Saving custom domain in the UI while publishing from `gh-pages` will write/refresh the root `CNAME` on that branch.
+
+## Namecheap Advanced DNS (exact records)
+
+Domain list → **locate-ng.com** → **Advanced DNS**. Remove conflicting default URL Redirect / Parking / leftover A/CNAME for `@` and `www` first.
+
+| Type | Host | Value | TTL |
+|------|------|-------|-----|
+| A Record | `@` | `185.199.108.153` | Automatic (or 30 min) |
+| A Record | `@` | `185.199.109.153` | Automatic |
+| A Record | `@` | `185.199.110.153` | Automatic |
+| A Record | `@` | `185.199.111.153` | Automatic |
+| AAAA Record | `@` | `2606:50c0:8000::153` | Automatic (optional IPv6) |
+| AAAA Record | `@` | `2606:50c0:8001::153` | Automatic |
+| AAAA Record | `@` | `2606:50c0:8002::153` | Automatic |
+| AAAA Record | `@` | `2606:50c0:8003::153` | Automatic |
+| CNAME Record | `www` | `procterconsult01-hub.github.io.` | Automatic |
+
+Do **not** point `www` at `procterconsult01-hub.github.io/locate-ng` — host only, no repo path. Trailing dot is optional in Namecheap.
+
+## Verification
+
+```bash
+dig locate-ng.com +noall +answer -t A
+dig www.locate-ng.com +nostats +nocomments +nocmd
+curl -sI https://locate-ng.com/ | head -15
+curl -sI https://www.locate-ng.com/ | head -15
+```
+
+Expect A records = the four GitHub IPs; www CNAME → `procterconsult01-hub.github.io`. HTTPS may take up to ~1 hour after DNS is correct and the domain is saved in Pages settings.
+
+## Live URL plan
+
+1. Push `main` + `gh-pages` as above (site assets at `/` with CNAME).
+2. Add Namecheap records.
+3. Set Pages custom domain to `locate-ng.com`, then Enforce HTTPS when available.
+4. Primary: **https://locate-ng.com/** — www should redirect to apex when both DNS sides are correct.
+5. Old project URL `https://procterconsult01-hub.github.io/locate-ng/` will **break** after base `/` deploy (assets no longer under `/locate-ng/`); that is expected.
