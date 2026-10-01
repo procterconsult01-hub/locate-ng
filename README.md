@@ -6,10 +6,11 @@ LocateNG gives every map pin a stable, human-readable code you can share — plu
 
 ## Live site
 
-- **GitHub Pages:** https://procterconsult01-hub.github.io/locate-ng/
-- Share links use hash routing and work under the Pages subpath, e.g. `https://procterconsult01-hub.github.io/locate-ng/#/c/NG-LA-6FR5G9FHQM`
+- **Custom domain:** https://locate-ng.com/ (and https://www.locate-ng.com/)
+- **GitHub Pages fallback:** https://procterconsult01-hub.github.io/locate-ng/
+- Share links use hash routing, e.g. `https://locate-ng.com/#/c/NG-LA-6FR5G9FHQM`
 
-Deploy: push to `main` runs `.github/workflows/deploy-pages.yml` (GitHub Actions → Pages).
+Deploy: push to `main` runs `.github/workflows/deploy-pages.yml` (GitHub Actions → Pages), or publish the `gh-pages` branch.
 
 ## Features
 

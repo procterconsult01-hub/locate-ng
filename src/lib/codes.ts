@@ -98,7 +98,7 @@ export function sharePath(friendlyCode: string): string {
 
 export function shareUrl(friendlyCode: string): string {
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  // Use Vite base so share links stay under /locate-ng/ even from hash routes
+  // Use Vite BASE_URL so share links work for both project Pages and custom-domain apex
   const basePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
   return `${origin}${basePath}/#/c/${friendlyCode}`;
 }

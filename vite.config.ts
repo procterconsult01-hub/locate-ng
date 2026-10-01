@@ -2,8 +2,8 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
-// GitHub Pages project site: https://procterconsult01-hub.github.io/locate-ng/
+// Custom domain (apex): https://locate-ng.com/ — base must be '/'
 export default defineConfig({
   plugins: [react()],
-  base: '/locate-ng/',
+  base: '/',
 })
