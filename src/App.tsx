@@ -5,6 +5,7 @@ import LocationPanel from './components/LocationPanel';
 import FindPanel from './components/FindPanel';
 import DirectionsPanel from './components/DirectionsPanel';
 import Header from './components/Header';
+import GuidePage from './components/GuidePage';
 import { codesFromLatLng, lookupCode, type LocationCodes } from './lib/codes';
 import { reverseGeocode } from './lib/geocode';
 import { savePin, loadSaved } from './lib/storage';
@@ -12,20 +13,21 @@ import { isInNigeria } from './lib/states';
 import type { LatLng, RouteResult, TravelMode } from './lib/routing';
 import 'leaflet/dist/leaflet.css';
 
-function parseRoute(): { mode: 'pin' | 'find'; code?: string } {
+function parseRoute(): { mode: 'pin' | 'find' | 'guide'; code?: string } {
   const hash = window.location.hash.replace(/^#/, '');
   const codeMatch = hash.match(/^\/?c\/([^/?#]+)/i);
   if (codeMatch) return { mode: 'pin', code: decodeURIComponent(codeMatch[1]) };
   const params = new URLSearchParams(window.location.search);
   const q = params.get('code');
   if (q) return { mode: 'pin', code: q };
+  if (/^\/?guide\/?$/i.test(hash)) return { mode: 'guide' };
   if (/^\/?find/i.test(hash)) return { mode: 'find' };
   return { mode: 'pin' };
 }
 
 export default function App() {
   const initial = useMemo(() => parseRoute(), []);
-  const [mode, setMode] = useState<'pin' | 'find'>(initial.mode);
+  const [mode, setMode] = useState<'pin' | 'find' | 'guide'>(initial.mode);
   const [codes, setCodes] = useState<LocationCodes | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [addressLoading, setAddressLoading] = useState(false);
@@ -100,8 +102,12 @@ export default function App() {
           void applyPin(result.lat, result.lng, { pushHash: false });
           setMode('pin');
         }
+      } else if (r.mode === 'guide') {
+        setMode('guide');
       } else if (r.mode === 'find') {
         setMode('find');
+      } else {
+        setMode('pin');
       }
     }
     window.addEventListener('hashchange', onHash);
@@ -145,6 +151,13 @@ export default function App() {
     }
   }
 
+  function onGuide() {
+    setMode('guide');
+    if (window.location.hash !== '#/guide') {
+      history.pushState(null, '', '#/guide');
+    }
+  }
+
   function handleMapPick(lat: number, lng: number) {
     if (pickingOrigin) {
       setOrigin({ lat, lng });
@@ -164,8 +177,17 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header mode={mode} onMode={onMode} onLocate={onLocate} locating={locating} />
+      <Header
+        mode={mode}
+        onMode={onMode}
+        onLocate={onLocate}
+        locating={locating}
+        onGuide={onGuide}
+      />
 
+      {mode === 'guide' ? (
+        <GuidePage />
+      ) : (
       <div className="map-shell">
         <div className="map-overlay-top">
           <SearchBox
@@ -260,6 +282,7 @@ export default function App() {
           )}
         </div>
       </div>
+      )}
 
       <footer className="app-footer">
         <span>LocateNG · OpenStreetMap · Open Location Code · OSRM</span>

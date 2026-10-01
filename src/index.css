@@ -640,3 +640,136 @@ a {
 .directions-panel .find-form {
   margin-top: 4px;
 }
+
+/* Brand home link */
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-link:hover h1 {
+  color: var(--green);
+}
+
+.guide-link {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--green-dark);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+.guide-link:hover,
+.guide-link.active {
+  background: var(--green-soft);
+  border-color: var(--border);
+}
+
+/* How-to guide page */
+.guide-page {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 40px;
+  background:
+    radial-gradient(ellipse at top, #e8f5ee 0%, transparent 55%),
+    #f3f7f4;
+}
+
+.guide-card {
+  width: min(640px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 24px 24px;
+}
+
+.guide-card > h2 {
+  margin: 4px 0 8px;
+  font-size: 1.55rem;
+  letter-spacing: -0.02em;
+  color: var(--green-dark);
+}
+
+.guide-steps {
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: grid;
+  gap: 14px;
+}
+
+.guide-steps li {
+  position: relative;
+  padding: 14px 14px 14px 56px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.guide-steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, var(--green-mid), var(--green-dark));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.guide-steps h3 {
+  margin: 0 0 4px;
+  font-size: 1.02rem;
+  color: var(--ink);
+}
+
+.guide-steps p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.guide-tips {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--green-soft);
+  border: 1px solid var(--border);
+}
+
+.guide-tips h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: var(--green-dark);
+}
+
+.guide-tips ul {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.guide-back {
+  margin: 22px 0 0;
+}
+
+.guide-back .btn {
+  width: 100%;
+}

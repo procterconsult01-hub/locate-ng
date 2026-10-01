@@ -97,8 +97,10 @@ export function sharePath(friendlyCode: string): string {
 }
 
 export function shareUrl(friendlyCode: string): string {
-  const base = typeof window !== 'undefined' ? `${window.location.origin}${window.location.pathname}` : '';
-  return `${base}#/c/${friendlyCode}`;
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  // Use Vite base so share links stay under /locate-ng/ even from hash routes
+  const basePath = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+  return `${origin}${basePath}/#/c/${friendlyCode}`;
 }
 
 export function googleMapsUrl(lat: number, lng: number): string {
