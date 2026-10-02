@@ -6,6 +6,7 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { LAGOS_CENTER, DEFAULT_ZOOM } from '../lib/states';
 import type { RouteResult } from '../lib/routing';
+import type { CommunityPin } from '../lib/pins';
 
 const DefaultIcon = L.icon({
   iconUrl: markerIcon,
@@ -32,13 +33,29 @@ const originIcon = L.divIcon({
   iconAnchor: [12, 24],
 });
 
+const hazardIcon = L.divIcon({
+  className: 'locate-pin hazard',
+  html: `<div class="locate-pin-inner hazard"></div>`,
+  iconSize: [26, 26],
+  iconAnchor: [13, 26],
+});
+
+const artisanIcon = L.divIcon({
+  className: 'locate-pin artisan',
+  html: `<div class="locate-pin-inner artisan"></div>`,
+  iconSize: [26, 26],
+  iconAnchor: [13, 26],
+});
+
 interface MapViewProps {
   lat: number | null;
   lng: number | null;
   origin?: { lat: number; lng: number } | null;
   route?: RouteResult | null;
-  pickMode?: 'dest' | 'origin';
+  communityPins?: CommunityPin[];
+  selectedPinId?: string | null;
   onPick: (lat: number, lng: number) => void;
+  onCommunityPinClick?: (pin: CommunityPin) => void;
   flyTo?: { lat: number; lng: number; zoom?: number } | null;
   fitBoundsKey?: string | null;
 }
@@ -94,7 +111,10 @@ export default function MapView({
   lng,
   origin,
   route,
+  communityPins = [],
+  selectedPinId,
   onPick,
+  onCommunityPinClick,
   flyTo,
   fitBoundsKey,
 }: MapViewProps) {
@@ -127,6 +147,24 @@ export default function MapView({
           pathOptions={{ color: lineColor, weight: 5, opacity: 0.85 }}
         />
       )}
+      {communityPins.map((pin) => {
+        const icon = pin.layer === 'hazard' ? hazardIcon : artisanIcon;
+        const selected = pin.id === selectedPinId;
+        return (
+          <Marker
+            key={pin.id}
+            position={[pin.lat, pin.lng]}
+            icon={icon}
+            opacity={selected ? 1 : 0.92}
+            eventHandlers={{
+              click: (e) => {
+                L.DomEvent.stopPropagation(e);
+                onCommunityPinClick?.(pin);
+              },
+            }}
+          />
+        );
+      })}
       {origin && <Marker position={[origin.lat, origin.lng]} icon={originIcon} />}
       {lat != null && lng != null && <Marker position={[lat, lng]} icon={destIcon} />}
     </MapContainer>

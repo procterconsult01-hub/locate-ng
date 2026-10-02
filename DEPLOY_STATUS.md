@@ -83,3 +83,12 @@ Expect A records = the four GitHub IPs; www CNAME → `procterconsult01-hub.gith
 3. Set Pages custom domain to `locate-ng.com`, then Enforce HTTPS when available.
 4. Primary: **https://locate-ng.com/** — www should redirect to apex when both DNS sides are correct.
 5. Old project URL `https://procterconsult01-hub.github.io/locate-ng/` will **break** after base `/` deploy (assets no longer under `/locate-ng/`); that is expected.
+
+---
+
+## Community layers (Hazard + Artisan) — 2026-10-01 CT
+
+Implemented locally in `src/` (see `docs/map-layers-spec.md` implementation status).
+
+- **Storage:** localStorage only — not shared across users until a backend is added.
+- **Deploy:** push `main` (and rebuild `gh-pages`) when write credentials are available; same blockers as above (`GH_TOKEN` invalid / MCP read-only).

@@ -9,6 +9,7 @@ LocateNG gives every map pin a stable, human-readable code you can share — plu
 - **Custom domain:** https://locate-ng.com/ (and https://www.locate-ng.com/)
 - **GitHub Pages fallback:** https://procterconsult01-hub.github.io/locate-ng/
 - Share links use hash routing, e.g. `https://locate-ng.com/#/c/NG-LA-6FR5G9FHQM`
+- In-app guide: https://locate-ng.com/#/guide (codes, directions, Hazard & Artisan layers)
 
 Deploy: push to `main` runs `.github/workflows/deploy-pages.yml` (GitHub Actions → Pages), or publish the `gh-pages` branch.
 
@@ -23,6 +24,7 @@ Deploy: push to `main` runs `.github/workflows/deploy-pages.yml` (GitHub Actions
 - Route polyline on the map via free OSRM / FOSSGIS; distance + ETA
 - Google Maps deep links with `travelmode=driving` / `walking`
 - Recent pins can be saved in `localStorage` (demo only)
+- **Community layers (v1, device-local):** Hazard (red, 72h) and Artisan (blue, 90d) — toggle on the map, report/list, share deep links `?layer=hazard|artisan&pin=…`
 
 ## Code format
 
@@ -85,6 +87,7 @@ See `screenshots/` after a local run (home, pin panel, find, directions).
 - **State boxes**: Approximate; a pin near a border may show a neighbouring state code.
 - **No NIPOST database**: This is not an official postal system.
 - **localStorage** saves are device-local only.
+- **Community pins** (Hazard / Artisan) are also localStorage-only in v1 — not visible to other users until a backend is added. See `docs/map-layers-spec.md`.
 - Map tiles, geocoding, and routing need network; encode/decode of codes works offline once the app is loaded.
 
 ## License
