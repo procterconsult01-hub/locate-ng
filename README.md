@@ -2,13 +2,13 @@
 
 **A shareable address for every place in Nigeria.**
 
-LocateNG gives every map pin a stable, human-readable code you can share — plus a Google [Plus Code](https://maps.google.com/pluscodes/) (Open Location Code) for the same spot. Drop a pin, look up a code, and get **walking / driving directions** on the map. No paid map APIs and no backend required for the MVP.
+LocateNG gives every map pin a short **5-character zip** you can share — plus a Google [Plus Code](https://maps.google.com/pluscodes/) (Open Location Code) for the same spot. Drop a pin, look up a code, and get **walking / driving directions** on the map. No paid map APIs and no backend required for the MVP.
 
 ## Live site
 
 - **Custom domain:** https://locate-ng.com/ (and https://www.locate-ng.com/)
 - **GitHub Pages fallback:** https://procterconsult01-hub.github.io/locate-ng/
-- Share links use hash routing, e.g. `https://locate-ng.com/#/c/NG-LA-6FR5G9FHQM`
+- Share links use hash routing, e.g. `https://locate-ng.com/#/c/82A6B`
 - In-app guide: https://locate-ng.com/#/guide (codes, directions, Hazard & Artisan layers)
 
 Deploy: push to `main` runs `.github/workflows/deploy-pages.yml` (GitHub Actions → Pages), or publish the `gh-pages` branch.
@@ -16,10 +16,10 @@ Deploy: push to `main` runs `.github/workflows/deploy-pages.yml` (GitHub Actions
 ## Features
 
 - Drop a pin on an OpenStreetMap map (or search a place in Nigeria)
-- Get a **LocateNG** friendly code and a **Plus Code**
+- Get a **LocateNG** 5-char zip and a **Plus Code**
 - Copy coordinates, share URL, or open in Google Maps
 - Look up either code format and restore the pin
-- Share links like `/#/c/NG-LA-6FR5G9FHQM` work without a server
+- Share links like `/#/c/82A6B` work without a server (old `/#/c/NG-LA-…` links still open)
 - **Directions**: walking & driving from my location, a searched place, or a second map pin (A→B)
 - Route polyline on the map via free OSRM / FOSSGIS; distance + ETA
 - Google Maps deep links with `travelmode=driving` / `walking`
@@ -30,13 +30,14 @@ Deploy: push to `main` runs `.github/workflows/deploy-pages.yml` (GitHub Actions
 
 | Kind | Example | Notes |
 |------|---------|--------|
-| **LocateNG (friendly)** | `NG-LA-6FR5G9FHQM` | `NG-{state}-{compact Plus Code}` |
-| **Plus Code** | `6FR5G9FH+QM` | Open Location Code, ~14 m precision |
+| **LocateNG zip (primary)** | `82A6B` | 5-char Crockford-ish base32 over Nigeria grid, **~215 m** cell |
+| **Plus Code** | `6FR5G9FH+QM` | Open Location Code, **~14 m** precision |
+| **Legacy friendly** | `NG-LA-6FR5G9FHQM` | Old `NG-{state}-{compact Plus}` — still accepted on lookup |
 
-- Codes are **deterministic** from latitude/longitude (same pin → same codes).
-- State abbrev (`LA`, `FC`, …) comes from coarse bounding boxes (MVP — not cadastral).
-- Lookup accepts friendly codes **or** Plus Codes (full or short).
-- Primary identity is the Plus Code; the friendly form is a Nigeria-flavored display that still decodes offline.
+- Short zip and Plus Code are **deterministic** from latitude/longitude (same cell/pin → same codes).
+- **Tradeoff:** shorter zip ⇒ larger cell (~215 m). Use the Plus Code when you need building-level accuracy.
+- Lookup accepts short zips, legacy `NG-…` codes, **or** Plus Codes (full or short).
+- Share URLs use the short zip: `/#/c/82A6B`. Old long `#/c/NG-LA-…` deep links still resolve.
 
 ## Directions
 

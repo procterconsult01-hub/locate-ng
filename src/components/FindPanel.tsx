@@ -30,7 +30,8 @@ export default function FindPanel({ onFound, initial = '' }: FindPanelProps) {
         </div>
       </header>
       <p className="muted">
-        Paste a LocateNG code (<span className="mono">NG-LA-…</span>) or a Google Plus Code (
+        Paste a <strong>5-character zip</strong> (<span className="mono">82A6B</span>), an
+        old <span className="mono">NG-LA-…</span> code, or a Google Plus Code (
         <span className="mono">6FR5G9FH+QM</span>).
       </p>
       <form onSubmit={submit} className="find-form">
@@ -41,7 +42,7 @@ export default function FindPanel({ onFound, initial = '' }: FindPanelProps) {
             setValue(e.target.value);
             setError(null);
           }}
-          placeholder="NG-LA-6FR5G9FHQM"
+          placeholder="82A6B"
           aria-label="Location code"
           autoCapitalize="characters"
           spellCheck={false}

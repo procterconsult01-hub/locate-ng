@@ -1,22 +1,34 @@
 import { encodePlusCode, decodePlusCode, plusToCompact, compactToPlus, isValidPlusCode } from './olc';
 import { stateFromLatLng, stateByCode } from './states';
+import {
+  encodeShortCode,
+  decodeShortCode,
+  isShortCode,
+  SHORT_CELL_METRES,
+} from './shortCode';
 
 export interface LocationCodes {
   lat: number;
   lng: number;
   plusCode: string;
+  /** Primary share code — 5-char short zip inside Nigeria; legacy long form outside. */
   friendlyCode: string;
+  /** Always the 5-char short code when inside the Nigeria grid. */
+  shortCode?: string;
+  /** Legacy NG-{STATE}-{compact Plus} — still accepted on lookup. */
+  legacyFriendlyCode: string;
   stateCode: string;
   stateName: string;
 }
 
+export { SHORT_CELL_METRES };
+
 /**
- * Friendly format: NG-{STATE}-{COMPACT_PLUS}
- * Example: NG-LA-6FR5G9FHQM
+ * Primary display/share code is a 5-char short zip (~215 m cell) when the
+ * pin is inside Nigeria. Outside the grid we fall back to the legacy
+ * NG-{STATE}-{COMPACT_PLUS} form. Plus Codes (~14 m) stay available always.
  *
- * Deterministic from lat/lng:
- *   Plus Code (length 10) → strip "+" → prepend NG-{state}
- * Lookup of friendly code reconstructs Plus Code and decodes coordinates.
+ * Lookup accepts: short zip, legacy NG-…, or Plus Code.
  */
 export function codesFromLatLng(lat: number, lng: number): LocationCodes {
   const plusCode = encodePlusCode(lat, lng);
@@ -24,8 +36,19 @@ export function codesFromLatLng(lat: number, lng: number): LocationCodes {
   const stateCode = state?.code ?? 'NG';
   const stateName = state?.name ?? 'Nigeria';
   const compact = plusToCompact(plusCode);
-  const friendlyCode = `NG-${stateCode}-${compact}`;
-  return { lat, lng, plusCode, friendlyCode, stateCode, stateName };
+  const legacyFriendlyCode = `NG-${stateCode}-${compact}`;
+  const shortCode = encodeShortCode(lat, lng) ?? undefined;
+  const friendlyCode = shortCode ?? legacyFriendlyCode;
+  return {
+    lat,
+    lng,
+    plusCode,
+    friendlyCode,
+    shortCode,
+    legacyFriendlyCode,
+    stateCode,
+    stateName,
+  };
 }
 
 const FRIENDLY_RE = /^NG-([A-Z]{2})-([A-Z0-9]{8,})$/i;
@@ -47,14 +70,36 @@ export function parseFriendlyCode(input: string): { stateCode: string; plusCode:
 }
 
 export type LookupResult =
-  | { ok: true; lat: number; lng: number; plusCode: string; friendlyCode?: string; via: 'plus' | 'friendly' }
+  | {
+      ok: true;
+      lat: number;
+      lng: number;
+      plusCode: string;
+      friendlyCode?: string;
+      via: 'plus' | 'friendly' | 'short';
+    }
   | { ok: false; error: string };
 
 export function lookupCode(input: string): LookupResult {
   const raw = input.trim();
   if (!raw) return { ok: false, error: 'Enter a LocateNG or Plus Code' };
 
-  // Try friendly first
+  // 5-char short zip (primary)
+  if (isShortCode(raw)) {
+    const coords = decodeShortCode(raw);
+    if (!coords) return { ok: false, error: 'Could not decode that code' };
+    const codes = codesFromLatLng(coords.lat, coords.lng);
+    return {
+      ok: true,
+      lat: coords.lat,
+      lng: coords.lng,
+      plusCode: codes.plusCode,
+      friendlyCode: codes.friendlyCode,
+      via: 'short',
+    };
+  }
+
+  // Legacy friendly NG-LA-6FR5G9FHQM
   const friendly = parseFriendlyCode(raw);
   if (friendly) {
     const coords = decodePlusCode(friendly.plusCode);
@@ -87,7 +132,7 @@ export function lookupCode(input: string): LookupResult {
 
   return {
     ok: false,
-    error: 'Unrecognized code. Try NG-LA-6FR5G9FHQM or 6FR5G9FH+QM',
+    error: 'Unrecognized code. Try a 5-char zip (e.g. 82A6B), NG-LA-…, or 6FR5G9FH+QM',
   };
 }
 

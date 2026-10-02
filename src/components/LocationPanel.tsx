@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { LocationCodes } from '../lib/codes';
-import { shareUrl, googleMapsUrl } from '../lib/codes';
+import { shareUrl, googleMapsUrl, SHORT_CELL_METRES } from '../lib/codes';
 import { shortPlusDisplay } from '../lib/olc';
 
 interface LocationPanelProps {
@@ -46,23 +46,29 @@ export default function LocationPanel({
     codes.plusCode,
     codes.stateName !== 'Nigeria' ? codes.stateName : undefined,
   );
+  const isShortZip = Boolean(codes.shortCode);
 
   return (
     <aside className="panel location-panel">
       <header className="panel-header">
         <div>
-          <p className="eyebrow">Your LocateNG code</p>
+          <p className="eyebrow">Your LocateNG zip</p>
           <h2 className="friendly-code">{codes.friendlyCode}</h2>
+          {isShortZip && (
+            <p className="muted small">
+              ~{SHORT_CELL_METRES} m cell · {codes.stateName}
+            </p>
+          )}
         </div>
-        <CopyBtn text={codes.friendlyCode} label="friendly code" />
+        <CopyBtn text={codes.friendlyCode} label="LocateNG zip" />
       </header>
 
       <div className="code-grid">
         <div className="code-row">
           <div>
-            <span className="label">Plus Code</span>
+            <span className="label">Plus Code (precise)</span>
             <p className="mono">{codes.plusCode}</p>
-            <p className="muted small">{shortPlus}</p>
+            <p className="muted small">{shortPlus} · ~14 m</p>
           </div>
           <CopyBtn text={codes.plusCode} label="Plus Code" />
         </div>

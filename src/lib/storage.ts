@@ -32,6 +32,8 @@ export function findSavedByCode(code: string): SavedPin | undefined {
   return loadSaved().find(
     (p) =>
       p.friendlyCode.toUpperCase() === u ||
+      (p.shortCode && p.shortCode.toUpperCase() === u) ||
+      (p.legacyFriendlyCode && p.legacyFriendlyCode.toUpperCase() === u) ||
       p.plusCode.toUpperCase() === u ||
       p.plusCode.replace('+', '').toUpperCase() === u.replace(/[^A-Z0-9]/g, ''),
   );

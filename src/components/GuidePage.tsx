@@ -5,8 +5,8 @@ export default function GuidePage() {
         <p className="eyebrow">How to use</p>
         <h2>LocateNG in four steps</h2>
         <p className="muted">
-          A shareable address for any place in Nigeria — a Google Plus Code plus a friendly
-          NG-… code for the same pin.
+          A shareable address for any place in Nigeria — a short 5-character zip (~215&nbsp;m)
+          plus a precise Google Plus Code (~14&nbsp;m) for the same pin.
         </p>
 
         <ol className="guide-steps">
@@ -14,21 +14,22 @@ export default function GuidePage() {
             <h3>Drop a pin</h3>
             <p>
               Tap the map, search a place, or use <strong>Use my location</strong>. LocateNG
-              shows a Plus Code and a friendly code such as <span className="mono">NG-LA-…</span>.
+              shows a short zip such as <span className="mono">82A6B</span> and a Plus Code
+              for the same spot.
             </p>
           </li>
           <li>
             <h3>Share the code or link</h3>
             <p>
-              Copy the friendly code, the Plus Code, or the share link. Anyone with the link
-              opens the same pin.
+              Copy the 5-character zip, the Plus Code, or the share link. Anyone with the link
+              opens the same pin (zip ≈ neighbourhood cell; Plus Code is building-level).
             </p>
           </li>
           <li>
             <h3>Find a code</h3>
             <p>
-              Open <strong>Find code</strong> and paste either format — a Plus Code or an
-              NG-… code. The map jumps to that spot.
+              Open <strong>Find code</strong> and paste a 5-char zip, an old{' '}
+              <span className="mono">NG-…</span> code, or a Plus Code. The map jumps to that spot.
             </p>
           </li>
           <li>
