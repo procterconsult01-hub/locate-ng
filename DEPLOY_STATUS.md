@@ -2,7 +2,19 @@
 
 **Goal:** https://locate-ng.com/ (and www) on GitHub Pages  
 **Repo:** procterconsult01-hub/locate-ng  
-**Updated:** 2026-10-01 (CT)
+**Updated:** 2026-10-01 ~19:40 CT
+
+## Deployed (2026-10-01 CT)
+
+| Item | Status |
+|------|--------|
+| `main` push | Done — `ce172dc` (Hazard + Artisan + guide) |
+| `gh-pages` push | Done — `2ae86d9` (CNAME `locate-ng.com` kept) |
+| Live https://locate-ng.com/ | HTTP 200; new assets `index-C_Gt3noT.js` |
+| Guide `#/guide` | SPA shell loads; client hash route reachable |
+| `.github/workflows` | **Not** pushed (token has `repo` only, no `workflow`) |
+
+Auth: `GH_TOKEN` worked for git push / Pages (`repo` scope).
 
 ## Done locally (ready to push)
 
